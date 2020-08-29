@@ -1,15 +1,24 @@
 import React, {useState, useEffect} from 'react';
 
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
+import {FlatList, Alert} from 'react-native';
+import axios from 'axios';
 
-import api from '../../services/api';
+import {StackScreenProps} from '@react-navigation/stack';
 
+import MovieItem from '../../components/MovieItem';
+
+import {Container, Loading, Separator, Logo, Gradient} from './styles';
+import {colors} from '../../assets/colors';
+
+// @ts-ignore
+import {API_KEY} from '@env';
+
+type Props = StackScreenProps<RootStackParamList, 'Home'>;
+
+type RootStackParamList = {
+  Home: undefined;
+  Details: {id: number; imageBaseURL: ImageBaseURL};
+};
 interface Item {
   id: string;
 }
@@ -23,91 +32,85 @@ interface Data {
   vote_count: string;
 }
 
-interface Props {
-  data: Data;
+interface ImageBaseURL {
+  backdrop_sizes: string[];
+  poster_sizes: string[];
+  base_url: string;
+  secure_base_url: string;
+  poster_path: string;
 }
 
-const MyComponent = React.memo(function MyComponent({data}: Props) {
-  return (
-    <>
-      <View key={data.id} style={styles.listItem}>
-        <Text>{data.title}</Text>
-        <Text>{data.release_date}</Text>
-        <Text>{data.vote_average}</Text>
-        {/* title, release_date, vote_average, vote_count, poster_path or backdrop_path */}
-      </View>
-    </>
-  );
-});
-
-function App() {
+function App({navigation}: Props) {
   const [page, setPage] = useState(1);
+  const [imageBaseURL, setImageBaseURL] = useState({} as ImageBaseURL);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([] as Data[]);
 
   useEffect(() => {
     async function getUpcoming() {
       setLoading(true);
-      const response = await api.get(`&page=${page}`);
-      setData([...data, ...response.data.results]);
+      try {
+        if (imageBaseURL.poster_path === undefined) {
+          const resp = await axios.get(
+            `https://api.themoviedb.org/3/configuration?api_key=${API_KEY}`,
+          );
+          setImageBaseURL(resp.data.images);
+        }
+        const response = await axios.get(
+          `https://api.themoviedb.org/3/movie/upcoming?api_key=${API_KEY}&language=en-US&page=${page}`,
+        );
+
+        setData((previousData) => [...previousData, ...response.data.results]);
+      } catch (err) {
+        console.log(err);
+        Alert.alert('Erro', err.message);
+      }
       setLoading(false);
     }
     getUpcoming();
-    //
-  }, [page]);
+  }, [page, imageBaseURL.poster_path]);
 
   function renderItem({item}: any) {
-    // console.log(item);
-    return <MyComponent key={item.id} data={item} />;
-  }
-
-  function renderFooter() {
-    if (!loading) return null;
     return (
-      <View>
-        <ActivityIndicator />
-      </View>
-    );
-  }
-
-  function renderSeparator() {
-    return (
-      <View
-        style={{
-          marginVertical: 5,
-          backgroundColor: '#00000000',
-          width: '100%',
-          height: 0,
+      <MovieItem
+        key={item.id}
+        data={item}
+        image={imageBaseURL}
+        getDetails={(id: number, imageInfo: ImageBaseURL) => {
+          navigation.navigate('Details', {id, imageBaseURL: imageInfo});
         }}
       />
     );
   }
 
+  function renderSeparator() {
+    return <Separator />;
+  }
+
   return (
-    <>
-      <FlatList
-        contentContainerStyle={styles.list}
-        data={data}
-        ItemSeparatorComponent={renderSeparator}
-        onEndReached={() => setPage(page + 1)}
-        onEndReachedThreshold={0.1}
-        renderItem={renderItem}
-        ListFooterComponent={renderFooter}
-        keyExtractor={(item: Item, index: number) => String(index)}
-      />
-    </>
+    <Container>
+      {loading && <Loading size="large" color="black" />}
+      <Gradient
+        colors={[
+          colors.primary_color,
+          colors.secondary_color,
+          colors.tertiary_color,
+        ]}>
+        <Logo />
+
+        <FlatList
+          // FlatList can't be used with styled-components 😓
+          data={data}
+          contentContainerStyle={{paddingBottom: 20}}
+          ItemSeparatorComponent={renderSeparator}
+          onEndReached={() => setPage(page + 1)}
+          onEndReachedThreshold={0.2}
+          renderItem={renderItem}
+          keyExtractor={(item: Item, index: number) => String(index)}
+        />
+      </Gradient>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  list: {
-    padding: 20,
-  },
-
-  listItem: {
-    backgroundColor: '#8eE',
-    padding: 20,
-  },
-});
 
 export default App;
