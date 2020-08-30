@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 
-import {FlatList, Alert} from 'react-native';
+import {FlatList, Alert, ScrollView} from 'react-native';
 import axios from 'axios';
 
 import {StackScreenProps} from '@react-navigation/stack';
@@ -41,7 +41,9 @@ interface ImageBaseURL {
 }
 
 function App({navigation}: Props) {
+  const [offset, setOffset] = useState(3500);
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(999);
   const [imageBaseURL, setImageBaseURL] = useState({} as ImageBaseURL);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([] as Data[]);
@@ -59,7 +61,7 @@ function App({navigation}: Props) {
         const response = await axios.get(
           `https://api.themoviedb.org/3/movie/upcoming?api_key=${API_KEY}&language=en-US&page=${page}`,
         );
-
+        setTotalPages(response.data.total_pages);
         setData((previousData) => [...previousData, ...response.data.results]);
       } catch (err) {
         console.log(err);
@@ -83,9 +85,17 @@ function App({navigation}: Props) {
     );
   }
 
+  function onEndReached() {
+    if (totalPages > page) {
+      setPage(page + 1);
+    }
+  }
+
   function renderSeparator() {
     return <Separator />;
   }
+
+  const List = useMemo(() => FlatList, []);
 
   return (
     <Container>
@@ -98,13 +108,16 @@ function App({navigation}: Props) {
         ]}>
         <Logo />
 
-        <FlatList
-          // FlatList can't be used with styled-components 😓
+        <List
           data={data}
+          maxToRenderPerBatch={20}
+          updateCellsBatchingPeriod={100}
+          windowSize={120}
+          initialNumToRender={20}
           contentContainerStyle={{paddingBottom: 20}}
           ItemSeparatorComponent={renderSeparator}
-          onEndReached={() => setPage(page + 1)}
-          onEndReachedThreshold={0.2}
+          onEndReached={onEndReached}
+          onEndReachedThreshold={0.1}
           renderItem={renderItem}
           keyExtractor={(item: Item, index: number) => String(index)}
         />

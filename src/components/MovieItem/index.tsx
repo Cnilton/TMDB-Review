@@ -1,7 +1,8 @@
 import React from 'react';
-import {Text} from 'react-native';
 
-import {Container, MovieImage, Item} from './styles';
+import {Container, MovieImage, Item, MovieInfo} from './styles';
+
+import {colors} from '../../assets/colors';
 
 interface Props {
   data: Data;
@@ -41,13 +42,19 @@ const MovieItem = React.memo(function MovieItem({
           uri: `${image.secure_base_url}${image.poster_sizes[5]}/${data.poster_path}`,
         }}
       />
+
       <Item>
-        <Text>Movie: {data.title}</Text>
-        <Text>Released: {data.release_date}</Text>
-        <Text>Average: {data.vote_average}</Text>
-        <Text>Votes: {data.vote_count}</Text>
+        <MovieInfo>Movie: {data.title}</MovieInfo>
+        <MovieInfo>Released: {data.release_date}</MovieInfo>
+        <MovieInfo>Average: {data.vote_average}</MovieInfo>
+        <MovieInfo>Votes: {data.vote_count}</MovieInfo>
+        <MovieInfo
+          style={{
+            color: colors.secondary_color,
+          }}>
+          See More Details
+        </MovieInfo>
       </Item>
-      {/* title, release_date, vote_average, vote_count, poster_path or backdrop_path */}
     </Container>
   );
 });
