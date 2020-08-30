@@ -1,11 +1,12 @@
 import React, {useState, useEffect, useMemo} from 'react';
 
-import {FlatList, Alert, ScrollView} from 'react-native';
-import axios from 'axios';
+import {FlatList, Alert} from 'react-native';
 
-import {StackScreenProps} from '@react-navigation/stack';
+import {useNavigation} from '@react-navigation/native';
 
 import MovieItem from '../../components/MovieItem';
+
+import api from '../../services/api';
 
 import {Container, Loading, Separator, Logo, Gradient} from './styles';
 import {colors} from '../../assets/colors';
@@ -13,12 +14,6 @@ import {colors} from '../../assets/colors';
 // @ts-ignore
 import {API_KEY} from '@env';
 
-type Props = StackScreenProps<RootStackParamList, 'Home'>;
-
-type RootStackParamList = {
-  Home: undefined;
-  Details: {id: number; imageBaseURL: ImageBaseURL};
-};
 interface Item {
   id: string;
 }
@@ -40,8 +35,8 @@ interface ImageBaseURL {
   poster_path: string;
 }
 
-function App({navigation}: Props) {
-  const [offset, setOffset] = useState(3500);
+function App() {
+  const navigation = useNavigation();
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(999);
   const [imageBaseURL, setImageBaseURL] = useState({} as ImageBaseURL);
@@ -53,13 +48,11 @@ function App({navigation}: Props) {
       setLoading(true);
       try {
         if (imageBaseURL.poster_path === undefined) {
-          const resp = await axios.get(
-            `https://api.themoviedb.org/3/configuration?api_key=${API_KEY}`,
-          );
+          const resp = await api.get(`configuration?api_key=${API_KEY}`);
           setImageBaseURL(resp.data.images);
         }
-        const response = await axios.get(
-          `https://api.themoviedb.org/3/movie/upcoming?api_key=${API_KEY}&language=en-US&page=${page}`,
+        const response = await api.get(
+          `movie/upcoming?api_key=${API_KEY}&language=en-US&page=${page}`,
         );
         setTotalPages(response.data.total_pages);
         setData((previousData) => [...previousData, ...response.data.results]);
@@ -79,7 +72,12 @@ function App({navigation}: Props) {
         data={item}
         image={imageBaseURL}
         getDetails={(id: number, imageInfo: ImageBaseURL) => {
-          navigation.navigate('Details', {id, imageBaseURL: imageInfo});
+          navigation.setParams({id, imageBaseURL: imageInfo});
+          // navigation.
+          navigation.navigate('Details', {
+            id,
+            imageBaseURL: imageInfo,
+          });
         }}
       />
     );

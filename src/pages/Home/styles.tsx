@@ -20,7 +20,7 @@ export const Logo = styled(TMDBLogo)`
 `;
 
 export const Loading = styled.ActivityIndicator`
-  background-color: #ffffff66;
+  background-color: #ffffff70;
   align-self: center;
   justify-content: center;
   position: absolute;

@@ -49,7 +49,7 @@ const MovieItem = React.memo(function MovieItem({
 
       <Item>
         <MovieInfo>Movie: {data.title}</MovieInfo>
-        <MovieInfo>Released: {data.release_date}</MovieInfo>
+        <MovieInfo>Release Date: {data.release_date}</MovieInfo>
         <MovieInfo>Average: {data.vote_average}</MovieInfo>
         <MovieInfo>Votes: {data.vote_count}</MovieInfo>
         <MovieInfo

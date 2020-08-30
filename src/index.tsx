@@ -13,7 +13,7 @@ const Stack = createStackNavigator();
 
 function App() {
   useEffect(() => {
-    changeNavigationBarColor(colors.tertiary_color, true, true);
+    changeNavigationBarColor(colors.tertiary_color, false, true);
   }, []);
 
   return (
@@ -26,7 +26,21 @@ function App() {
             name="Home"
             component={Home}
           />
-          <Stack.Screen name="Details" component={Details} />
+          <Stack.Screen
+            name="Details"
+            component={Details}
+            options={{
+              headerTitleStyle: {
+                fontFamily: 'Roboto-Medium',
+                textAlignVertical: 'center',
+              },
+              headerTitleAlign: 'center',
+              headerStyle: {
+                backgroundColor: colors.primary_color,
+              },
+              headerTintColor: '#fff',
+            }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </>
