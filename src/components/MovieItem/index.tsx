@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Container, MovieImage, Item, MovieInfo} from './styles';
+import {Container, MovieImage, Item, MovieInfo, EmptyImage} from './styles';
 
 import {colors} from '../../assets/colors';
 
@@ -36,12 +36,16 @@ const MovieItem = React.memo(function MovieItem({
       onPress={() => getDetails(data.id, image)}
       activeOpacity={0.7}
       key={data.id}>
-      <MovieImage
-        resizeMode="contain"
-        source={{
-          uri: `${image.secure_base_url}${image.poster_sizes[5]}/${data.poster_path}`,
-        }}
-      />
+      {data.poster_path !== null ? (
+        <MovieImage
+          resizeMode="contain"
+          source={{
+            uri: `${image.secure_base_url}${image.poster_sizes[5]}/${data.poster_path}`,
+          }}
+        />
+      ) : (
+        <EmptyImage />
+      )}
 
       <Item>
         <MovieInfo>Movie: {data.title}</MovieInfo>

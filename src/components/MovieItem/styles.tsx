@@ -16,6 +16,12 @@ export const Item = styled.View`
   padding-left: 10px;
 `;
 
+export const EmptyImage = styled.View`
+  align-self: flex-start;
+  width: 127px;
+  height: 190px;
+`;
+
 export const MovieImage = styled(FastImage)`
   align-self: flex-start;
   width: 127px;
