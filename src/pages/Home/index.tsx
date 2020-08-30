@@ -107,6 +107,7 @@ function App() {
         <Logo />
 
         <List
+          testID="list"
           data={data}
           maxToRenderPerBatch={20}
           updateCellsBatchingPeriod={100}

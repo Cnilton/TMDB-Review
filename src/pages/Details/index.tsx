@@ -82,7 +82,6 @@ function Details() {
         `movie/${params.id}?api_key=${API_KEY}&language=en-US`,
       );
       setDetails(response.data);
-      console.log(response.data);
     }
     getDetails();
   }, [params]);

@@ -27,12 +27,15 @@
     "react-native-screens": "^2.10.1",
     "react-native-svg": "^12.1.0",
     "react-native-svg-transformer": "^0.14.3",
+    "react-native-testing-library": "^6.0.0",
     "styled-components": "^5.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
     "@babel/runtime": "^7.8.4",
     "@react-native-community/eslint-config": "^1.1.0",
+    "@testing-library/jest-native": "^3.3.0",
+    "@testing-library/react-native": "^7.0.2",
     "@types/jest": "^25.2.3",
     "@types/react-native": "^0.63.2",
     "@types/react-native-dotenv": "^0.2.0",
@@ -40,9 +43,11 @@
     "@types/styled-components": "^5.1.2",
     "@typescript-eslint/eslint-plugin": "^2.27.0",
     "@typescript-eslint/parser": "^2.27.0",
+    "axios-mock-adapter": "^1.18.2",
     "babel-jest": "^25.1.0",
     "eslint": "^6.5.1",
     "jest": "^26.4.2",
+    "jest-styled-components": "^7.0.3",
     "metro-react-native-babel-preset": "^0.59.0",
     "prettier": "^2.0.4",
     "react-test-renderer": "16.13.1",
@@ -50,6 +55,15 @@
   },
   "jest": {
     "preset": "react-native",
+    "setupFilesAfterEnv": [
+      "@testing-library/jest-native/extend-expect"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!((jest-)?react-native|react-native-vector-icons|react-native-version-number|react-native-device-info|react-navigation|react-native-safe-area-view|react-navigation-drawer|react-native-easy-grid|react-native-elements|react-navigation-stack|react-native-fontawesome|react-native-progress|react-native-material-dropdown|react-native-material-ripple|react-native-material-textfield|react-native-material-buttons|react-native-languages|react-native-restart|react-native-keyboard-aware-scroll-view|react-native-iphone-x-helper|react-native-collapsible|react-native-modal|react-native-animatable|@react-native-community/async-storage|@react-navigation/.*))"
+    ],
+    "setupFiles": [
+      "./jest.setup.js"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",
