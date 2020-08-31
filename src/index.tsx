@@ -4,6 +4,7 @@ import {StatusBar} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import changeNavigationBarColor from 'react-native-navigation-bar-color';
+import SplashScreen from 'react-native-splash-screen';
 
 import Home from './pages/Home';
 import Details from './pages/Details';
@@ -14,6 +15,7 @@ const Stack = createStackNavigator();
 function App() {
   useEffect(() => {
     changeNavigationBarColor(colors.tertiary_color, false, true);
+    SplashScreen.hide();
   }, []);
 
   return (
